@@ -1,8 +1,3 @@
-# Maven
-# Build your Java project and run tests with Apache Maven.
-# Add steps that analyze code, save build artifacts, deploy, and more:
-# https://docs.microsoft.com/azure/devops/pipelines/languages/java
-
 trigger:
 - main
 
@@ -10,6 +5,7 @@ pool:
   vmImage: ubuntu-latest
 
 steps:
+# 🏗️ Build com Maven
 - task: Maven@3
   inputs:
     mavenPomFile: 'pom.xml'
@@ -20,3 +16,17 @@ steps:
     publishJUnitResults: true
     testResultsFiles: '**/surefire-reports/TEST-*.xml'
     goals: 'package'
+
+- task: PublishBuildArtifacts@1
+  inputs:
+    pathToPublish: '$(System.DefaultWorkingDirectory)/target'
+    artifactName: 'drop'
+    publishLocation: 'Container'
+
+- script: |
+    echo "Iniciando deploy do artefato gerado..."
+    ls $(System.DefaultWorkingDirectory)/target
+    # Aqui você poderia rodar o jar ou mover para outro servidor
+    # Exemplo: java -jar target/seu-projeto.jar &
+    echo "Deploy concluído com sucesso!"
+  displayName: 'Etapa de Deploy'
